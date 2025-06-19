@@ -20,7 +20,7 @@ export const authenticate = (...allowedRoles: ('BUYER' | 'SELLER')[]) => {
       const payload = jwt.verify(token, secret) as JwtPayload;
 
       if (allowedRoles.length && !allowedRoles.includes(payload.role)) {
-        res.status(403).json({ message: 'Forbidden' });
+        res.status(403).json({ error: 'Forbidden' });
         return;
       }
 

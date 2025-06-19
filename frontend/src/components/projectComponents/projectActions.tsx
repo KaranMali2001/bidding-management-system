@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Project } from "@/lib/types";
+import type { Bid, Project } from "@/lib/types";
 import { CheckCircle, Edit, LogIn, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -10,10 +10,11 @@ interface ProjectActionsProps {
   isAuthenticated: boolean;
   role: string;
   canBid: boolean;
+  canEditBid: boolean;
   userHasBid: boolean;
-  userBid: any;
+  userBid: Bid | null | undefined | false;
   onSubmitBid: () => void;
-  onEditBid: (bid: any) => void;
+  onEditBid: (bid: Bid) => void;
   onDeleteBid: (bidId: string) => void;
 }
 
@@ -22,6 +23,7 @@ export default function ProjectActions({
   isAuthenticated,
   role,
   canBid,
+  canEditBid,
   userHasBid,
   userBid,
   onSubmitBid,
@@ -73,6 +75,7 @@ export default function ProjectActions({
                 size="sm"
                 variant="outline"
                 onClick={() => userBid && onEditBid(userBid)}
+                disabled={!canEditBid}
                 className="border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36]"
               >
                 <Edit className="h-3 w-3" />
@@ -81,6 +84,7 @@ export default function ProjectActions({
                 size="sm"
                 variant="outline"
                 onClick={() => userBid && onDeleteBid(userBid.id)}
+                disabled={!canEditBid}
                 className="border-[#F85149]/30 text-[#F85149] hover:bg-[#F85149]/10"
               >
                 <Trash2 className="h-3 w-3" />

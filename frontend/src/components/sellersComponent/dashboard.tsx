@@ -38,8 +38,7 @@ export default function SellerDashboard({
     mutationFn: bidsApi.deleteBids,
     onSuccess: (res) => {
       toast.success("Bid withdrawn successfully");
-      console.log("res", res);
-      console.log("sellerProjects", sellerProjects);
+
       sellerProjects = sellerProjects.filter(
         (project) => project.project.id === res.projectId
       );
@@ -264,13 +263,17 @@ export default function SellerDashboard({
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <Link
-                        href={`/projects/${sellerProject.project.id}`}
-                        className="flex-1 border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36]"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="flex-1 border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36] hover:text-[#C9D1D9]"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View Details
-                      </Link>
+                        <Link href={`/projects/${sellerProject.project.id}`}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Details
+                        </Link>
+                      </Button>
 
                       <Button
                         variant="outline"
@@ -298,8 +301,8 @@ export default function SellerDashboard({
                     No Bids Yet
                   </h3>
                   <p className="text-[#8B949E] mb-4">
-                    You haven't submitted any bids yet. Browse projects to get
-                    started.
+                    You haven&apos;t submitted any bids yet. Browse projects to
+                    get started
                   </p>
                   <Button className="bg-[#2F81F7] hover:bg-[#2F81F7]/90">
                     Browse Projects

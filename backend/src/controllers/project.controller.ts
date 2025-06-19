@@ -36,6 +36,7 @@ export const getBuyerProjects = async (req: Request, res: Response) => {
         bids: true,
       },
     });
+
     res.json(projects);
   } catch (error) {
     console.error('Error fetching buyer projects:', error);
@@ -48,6 +49,7 @@ export const getOpenProjects = async (req: Request, res: Response) => {
     const projects = await prisma.project.findMany({
       where: { status: 'PENDING' },
     });
+
     res.json(projects);
   } catch (error) {
     console.error('Error fetching open projects:', error);

@@ -42,7 +42,7 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import type { z } from "zod";
 
 type UpdateProjectForm = z.infer<typeof projectSchema>;
 
@@ -73,7 +73,6 @@ export default function EditProjectModalContent({
     onSuccess: (updatedProject) => {
       toast.success("Project updated successfully! ✨");
       setProjects(updatedProject);
-
       onSuccess?.();
     },
     onError: (error) => {
@@ -96,15 +95,15 @@ export default function EditProjectModalContent({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return "bg-[#E3B341]/20 text-[#E3B341] border-[#E3B341]/30";
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
       case "IN_PROGRESS":
-        return "bg-[#2F81F7]/20 text-[#2F81F7] border-[#2F81F7]/30";
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       case "COMPLETED":
-        return "bg-[#28A745]/20 text-[#28A745] border-[#28A745]/30";
+        return "bg-green-500/20 text-green-400 border-green-500/30";
       case "CANCELLED":
-        return "bg-[#F85149]/20 text-[#F85149] border-[#F85149]/30";
+        return "bg-red-500/20 text-red-400 border-red-500/30";
       default:
-        return "bg-[#1F2A36] text-[#8B949E] border-[#30363D]";
+        return "bg-gray-800 text-gray-400 border-gray-700";
     }
   };
 
@@ -113,12 +112,12 @@ export default function EditProjectModalContent({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Project Details Section */}
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-6">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 bg-[#2F81F7]/20 rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 text-[#2F81F7]" />
+              <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
+                <FileText className="w-4 h-4 text-red-500" />
               </div>
-              <h2 className="text-xl font-semibold text-[#C9D1D9]">
+              <h2 className="text-xl font-semibold text-white">
                 Project Details
               </h2>
             </div>
@@ -129,19 +128,19 @@ export default function EditProjectModalContent({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#C9D1D9] font-medium text-base">
+                    <FormLabel className="text-white font-medium text-base">
                       Title
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g., Build an e-commerce website"
-                        className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] placeholder:text-[#8B949E] focus:border-[#2F81F7] focus:ring-[#2F81F7] h-12 text-base"
+                        className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 h-12 text-base"
                         {...field}
                       />
                     </FormControl>
                     <div className="flex justify-between items-center">
-                      <FormMessage className="text-[#F85149]" />
-                      <span className="text-xs text-[#8B949E]">
+                      <FormMessage className="text-red-400" />
+                      <span className="text-xs text-gray-400">
                         {field.value.length}/100
                       </span>
                     </div>
@@ -154,20 +153,20 @@ export default function EditProjectModalContent({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#C9D1D9] font-medium text-base">
+                    <FormLabel className="text-white font-medium text-base">
                       Description
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Provide a detailed description..."
                         rows={8}
-                        className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] placeholder:text-[#8B949E] focus:border-[#2F81F7] focus:ring-[#2F81F7] resize-none text-base leading-relaxed"
+                        className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 resize-none text-base leading-relaxed"
                         {...field}
                       />
                     </FormControl>
                     <div className="flex justify-between items-center">
-                      <FormMessage className="text-[#F85149]" />
-                      <span className="text-xs text-[#8B949E]">
+                      <FormMessage className="text-red-400" />
+                      <span className="text-xs text-gray-400">
                         {field.value.length}/2000
                       </span>
                     </div>
@@ -180,12 +179,12 @@ export default function EditProjectModalContent({
           {/* Budget, Timeline & Status Section */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {/* Budget Section */}
-            <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-6">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-[#FFB347]/20 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-4 h-4 text-[#FFB347]" />
+                <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-4 h-4 text-yellow-500" />
                 </div>
-                <h2 className="text-xl font-semibold text-[#C9D1D9]">Budget</h2>
+                <h2 className="text-xl font-semibold text-white">Budget</h2>
               </div>
 
               <div className="space-y-4">
@@ -194,21 +193,21 @@ export default function EditProjectModalContent({
                   name="budgetMin"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#C9D1D9] font-medium">
+                      <FormLabel className="text-white font-medium">
                         Min ($)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="500"
-                          className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] placeholder:text-[#8B949E] focus:border-[#2F81F7] focus:ring-[#2F81F7] h-12 text-base"
+                          className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 h-12 text-base"
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
                         />
                       </FormControl>
-                      <FormMessage className="text-[#F85149]" />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -218,21 +217,21 @@ export default function EditProjectModalContent({
                   name="budgetMax"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#C9D1D9] font-medium">
+                      <FormLabel className="text-white font-medium">
                         Max ($)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="2000"
-                          className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] placeholder:text-[#8B949E] focus:border-[#2F81F7] focus:ring-[#2F81F7] h-12 text-base"
+                          className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 h-12 text-base"
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
                         />
                       </FormControl>
-                      <FormMessage className="text-[#F85149]" />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -241,12 +240,12 @@ export default function EditProjectModalContent({
                 {watchedBudgetMin > 0 &&
                   watchedBudgetMax > 0 &&
                   watchedBudgetMax >= watchedBudgetMin && (
-                    <div className="bg-[#1F2A36] border border-[#30363D] rounded-lg p-3">
-                      <p className="text-[#C9D1D9] font-semibold text-sm">
+                    <div className="bg-gray-900 border border-gray-700 rounded-lg p-3">
+                      <p className="text-white font-semibold text-sm">
                         ${watchedBudgetMin.toLocaleString()} - $
                         {watchedBudgetMax.toLocaleString()}
                       </p>
-                      <p className="text-xs text-[#8B949E]">
+                      <p className="text-xs text-gray-400">
                         Avg: $
                         {Math.round(
                           (watchedBudgetMin + watchedBudgetMax) / 2
@@ -258,14 +257,12 @@ export default function EditProjectModalContent({
             </div>
 
             {/* Timeline Section */}
-            <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-6">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-[#28A745]/20 rounded-lg flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-[#28A745]" />
+                <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-green-400" />
                 </div>
-                <h2 className="text-xl font-semibold text-[#C9D1D9]">
-                  Timeline
-                </h2>
+                <h2 className="text-xl font-semibold text-white">Timeline</h2>
               </div>
 
               <FormField
@@ -273,7 +270,7 @@ export default function EditProjectModalContent({
                 name="deadline"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-[#C9D1D9] font-medium text-base">
+                    <FormLabel className="text-white font-medium text-base">
                       Project Deadline
                     </FormLabel>
                     <Popover>
@@ -282,18 +279,18 @@ export default function EditProjectModalContent({
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full h-12 pl-3 text-left font-normal bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] hover:bg-[#1F2A36] hover:border-[#2F81F7]",
-                              !field.value && "text-[#8B949E]"
+                              "w-full h-12 pl-3 text-left font-normal bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-blue-500",
+                              !field.value && "text-gray-400"
                             )}
                           >
                             {field.value ? (
                               <span className="flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-[#2F81F7]" />
+                                <CalendarIcon className="h-4 w-4 text-blue-500" />
                                 {format(new Date(field.value), "PPP")}
                               </span>
                             ) : (
                               <span className="flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-[#8B949E]" />
+                                <CalendarIcon className="h-4 w-4 text-gray-400" />
                                 Select a deadline
                               </span>
                             )}
@@ -301,7 +298,7 @@ export default function EditProjectModalContent({
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="w-auto p-0 bg-[#161B22] border-[#30363D]"
+                        className="w-auto p-0 bg-gray-800 border-gray-700"
                         align="start"
                       >
                         <Calendar
@@ -314,23 +311,23 @@ export default function EditProjectModalContent({
                           }
                           disabled={(date) => date < new Date()}
                           initialFocus
-                          className="bg-[#161B22] text-[#C9D1D9]"
+                          className="bg-gray-800 text-white"
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage className="text-[#F85149]" />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
             </div>
 
             {/* Status Section */}
-            <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-6">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-[#E3B341]/20 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-[#E3B341]" />
+                <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4 text-yellow-500" />
                 </div>
-                <h2 className="text-xl font-semibold text-[#C9D1D9]">Status</h2>
+                <h2 className="text-xl font-semibold text-white">Status</h2>
               </div>
 
               <FormField
@@ -338,7 +335,7 @@ export default function EditProjectModalContent({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#C9D1D9] font-medium">
+                    <FormLabel className="text-white font-medium">
                       Project Status
                     </FormLabel>
                     <Select
@@ -346,50 +343,50 @@ export default function EditProjectModalContent({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] h-12">
+                        <SelectTrigger className="bg-gray-900 border-gray-700 text-white h-12">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-[#161B22] border-[#30363D]">
+                      <SelectContent className="bg-gray-800 border-gray-700">
                         <SelectItem
                           value="Pending"
-                          className="text-[#C9D1D9] focus:bg-[#1F2A36]"
+                          className="text-white hover:bg-gray-700 focus:bg-gray-700"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#E3B341] rounded-full"></div>
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                             Pending
                           </div>
                         </SelectItem>
                         <SelectItem
                           value="IN_PROGRESS"
-                          className="text-[#C9D1D9] focus:bg-[#1F2A36]"
+                          className="text-white hover:bg-gray-700 focus:bg-gray-700"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#2F81F7] rounded-full"></div>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                             In Progress
                           </div>
                         </SelectItem>
                         <SelectItem
                           value="COMPLETED"
-                          className="text-[#C9D1D9] focus:bg-[#1F2A36]"
+                          className="text-white hover:bg-gray-700 focus:bg-gray-700"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#28A745] rounded-full"></div>
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                             Completed
                           </div>
                         </SelectItem>
                         <SelectItem
                           value="CANCELLED"
-                          className="text-[#C9D1D9] focus:bg-[#1F2A36]"
+                          className="text-white hover:bg-gray-700 focus:bg-gray-700"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#F85149] rounded-full"></div>
+                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                             Cancelled
                           </div>
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage className="text-[#F85149]" />
+                    <FormMessage className="text-red-400" />
 
                     {/* Current Status Display */}
                     <div
@@ -410,12 +407,12 @@ export default function EditProjectModalContent({
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-6">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 type="submit"
                 disabled={updateProjectMutation.isPending}
-                className="flex-1 bg-[#FFB347] hover:bg-[#FFB347]/90 text-[#0D1117] font-medium h-12 text-base"
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium h-12 text-base"
               >
                 {updateProjectMutation.isPending && (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -429,7 +426,7 @@ export default function EditProjectModalContent({
                 variant="outline"
                 onClick={onSuccess}
                 disabled={updateProjectMutation.isPending}
-                className="border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36] hover:text-[#C9D1D9] h-12 px-8"
+                className="border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white h-12 px-8"
               >
                 Cancel
               </Button>

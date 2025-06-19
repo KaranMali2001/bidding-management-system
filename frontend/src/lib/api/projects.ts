@@ -15,6 +15,7 @@ export const projectsApi = {
   // Get buyer's projects
   getBuyerProjects: async (): Promise<Project[]> => {
     const res = await apiClient.get<Project[]>("/projects");
+
     return res.data;
   },
 

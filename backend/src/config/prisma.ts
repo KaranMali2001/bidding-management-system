@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 export const connectDB = async () => {
   try {
     await prisma.$connect();
-    console.log(' Database connected');
+    console.warn(' Database connected');
   } catch (err) {
     console.error(' Unable to connect to database', err);
     throw err;

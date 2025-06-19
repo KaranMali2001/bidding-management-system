@@ -25,7 +25,6 @@ const defaultNavigation = [
 
 // Function to get navigation based on role
 const getNavigationByRole = (role: string) => {
-  console.log("role from sidbar", role);
   switch (role?.toLowerCase()) {
     case "buyer":
       return buyerNavigation;
@@ -72,7 +71,7 @@ export function Sidebar() {
     }
     return "U";
   };
-  console.log("user", user);
+
   // Logout function
   const handleLogout = () => {
     try {

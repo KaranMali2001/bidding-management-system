@@ -21,8 +21,6 @@ export default async function Page({
     role = decodedToken.role;
   } // TODO: Handle this case
 
-  console.log("userId", userId);
-  console.log("role", role);
   return (
     <ProjectDetailPage
       projectDetails={projectDetails}

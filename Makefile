@@ -18,7 +18,7 @@ format:
 # Build both frontend and backend
 build:
 	@echo "Building frontend and backend..."
-	cd backend && pnpm run build && cd frontend && pnpm run build
+	cd backend && pnpm run build & cd frontend && pnpm run build
 
 # Start both frontend and backend servers in production mode
 start:

@@ -41,15 +41,15 @@ export function BuyerDashboard({
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-gray-900">
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2 text-[#C9D1D9]">
+                <h1 className="text-3xl font-bold mb-2 text-white">
                   Buyer Dashboard
                 </h1>
-                <p className="text-[#8B949E]">
+                <p className="text-gray-400">
                   Manage your projects and review bids
                 </p>
               </div>
@@ -58,12 +58,12 @@ export function BuyerDashboard({
                 onOpenChange={setIsCreateModalOpen}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F81F7] hover:bg-[#2F81F7]/90">
+                  <Button className="bg-red-500 hover:bg-red-600">
                     <Plus className="mr-2 h-4 w-4" />
                     Create Project
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto bg-[#161B22] border-[#30363D]">
+                <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto bg-gray-800 border-gray-700">
                   <DialogHeader className="sr-only">
                     <DialogTitle>Create New Project</DialogTitle>
                     <DialogDescription>
@@ -80,67 +80,67 @@ export function BuyerDashboard({
           </div>
 
           <div className="grid gap-6 md:grid-cols-4 mb-8">
-            <Card className="bg-[#161B22] border-[#30363D]">
+            <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-[#8B949E]">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   Total Projects
                 </CardTitle>
-                <FolderOpen className="h-4 w-4 text-[#8B949E]" />
+                <FolderOpen className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#C9D1D9]">
+                <div className="text-2xl font-bold text-white">
                   {stats.total}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#161B22] border-[#30363D]">
+            <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-[#8B949E]">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   Pending
                 </CardTitle>
-                <Clock className="h-4 w-4 text-[#8B949E]" />
+                <Clock className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#C9D1D9]">
+                <div className="text-2xl font-bold text-white">
                   {stats.pending}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#161B22] border-[#30363D]">
+            <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-[#8B949E]">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   In Progress
                 </CardTitle>
-                <Clock className="h-4 w-4 text-[#8B949E]" />
+                <Clock className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#C9D1D9]">
+                <div className="text-2xl font-bold text-white">
                   {stats.inProgress}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#161B22] border-[#30363D]">
+            <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-[#8B949E]">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   Completed
                 </CardTitle>
-                <CheckCircle className="h-4 w-4 text-[#8B949E]" />
+                <CheckCircle className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#C9D1D9]">
+                <div className="text-2xl font-bold text-white">
                   {stats.completed}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="bg-[#161B22] border-[#30363D]">
+          <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-[#C9D1D9]">Recent Projects</CardTitle>
-              <CardDescription className="text-[#8B949E]">
+              <CardTitle className="text-white">Recent Projects</CardTitle>
+              <CardDescription className="text-gray-400">
                 Your latest project postings
               </CardDescription>
             </CardHeader>
@@ -150,16 +150,16 @@ export function BuyerDashboard({
                   {projects.slice(0, 5).map((project) => (
                     <div
                       key={project.id}
-                      className="flex items-center justify-between p-4 border border-[#30363D] rounded-lg bg-[#1F2A36]"
+                      className="flex items-center justify-between p-4 border border-gray-700 rounded-lg bg-gray-800"
                     >
                       <div>
-                        <h3 className="font-medium text-[#C9D1D9]">
+                        <h3 className="font-medium text-white">
                           {project.title}
                         </h3>
-                        <p className="text-sm text-[#8B949E]">
+                        <p className="text-sm text-gray-400">
                           ${project.budgetMin} - ${project.budgetMax}
                         </p>
-                        <p className="text-xs text-[#8B949E]">
+                        <p className="text-xs text-gray-400">
                           {project.bids?.length || 0} bid
                           {(project.bids?.length || 0) !== 1 ? "s" : ""}
                         </p>
@@ -168,8 +168,8 @@ export function BuyerDashboard({
                         <Badge
                           className={
                             project.status === "PENDING"
-                              ? "bg-[#28A745]/20 text-[#28A745] border-[#28A745]/30"
-                              : "bg-[#1F2A36] text-[#8B949E] border-[#30363D]"
+                              ? "bg-green-500/20 text-green-400 border-green-500/30"
+                              : "bg-gray-800 text-gray-400 border-gray-700"
                           }
                         >
                           {project.status}
@@ -179,7 +179,7 @@ export function BuyerDashboard({
                           variant="outline"
                           size="sm"
                           asChild
-                          className="border-[#30363D] text-[#8B949E] hover:bg-[#0D1117]"
+                          className="border-gray-700 text-gray-400 hover:bg-gray-700"
                         >
                           <Link href={`/projects/${project.id}`}>View</Link>
                         </Button>
@@ -189,10 +189,10 @@ export function BuyerDashboard({
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <h3 className="text-lg font-semibold mb-2 text-[#C9D1D9]">
+                  <h3 className="text-lg font-semibold mb-2 text-white">
                     No projects yet
                   </h3>
-                  <p className="text-[#8B949E] mb-4">
+                  <p className="text-gray-400 mb-4">
                     Create your first project to get started
                   </p>
                   <Dialog
@@ -200,12 +200,12 @@ export function BuyerDashboard({
                     onOpenChange={setIsCreateModalOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button className="bg-[#2F81F7] hover:bg-[#2F81F7]/90">
+                      <Button className="bg-red-500 hover:bg-red-600">
                         <Plus className="mr-2 h-4 w-4" />
                         Create Project
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-3xl md:max-w-4xl lg:max-w-5xl w-full-y-auto bg-[#161B22] border-[#30363D]">
+                    <DialogContent className="max-w-3xl md:max-w-4xl lg:max-w-5xl w-full-y-auto bg-gray-800 border-gray-700">
                       <DialogHeader className="sr-only">
                         <DialogTitle>Create New Project</DialogTitle>
                         <DialogDescription>

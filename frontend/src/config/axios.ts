@@ -20,10 +20,10 @@ apiClient.interceptors.request.use(async (config) => {
     // Client-side
     token = getTokenClient();
   }
-  console.log("token", token);
+
   if (token) {
     config.headers.Authorization = `${token}`;
   }
-  console.log("config", config.headers);
+
   return config;
 });

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { bidsApi } from "@/lib/api/bids";
 import type { bidSchema } from "@/lib/schemas";
-import type { Project } from "@/lib/types";
+import type { Bid, Project } from "@/lib/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
@@ -106,7 +106,7 @@ export default function ProjectDetailPage({
     }
   };
 
-  const handleEditBid = (bid: any) => {
+  const handleEditBid = (bid: Bid) => {
     setEditingBid(bid.id);
     setShowBidForm(true);
   };
@@ -136,7 +136,7 @@ export default function ProjectDetailPage({
                   Project Not Found
                 </h1>
                 <p className="text-[#8B949E] mb-4">
-                  The project you're looking for doesn't exist.
+                  The project you are looking for doesn not exist.
                 </p>
                 <Link href="/projects">
                   <Button
@@ -164,6 +164,11 @@ export default function ProjectDetailPage({
     isAuthenticated && project.bids?.find((bid) => bid.sellerId === userId);
   const isProjectOwner =
     isAuthenticated && role === "BUYER" && project.buyerId === userId;
+  const canEditBid =
+    (role === "SELLER" &&
+      project.bids?.find((bid) => bid.sellerId === userId)?.status ===
+        "PENDING") ||
+    false;
 
   // Check if current user is the winning seller and project is in progress
   const winningBid = project.bids?.find((bid) => bid.status === "IN_PROGRESS");
@@ -198,20 +203,19 @@ export default function ProjectDetailPage({
             />
 
             {/* Project Actions */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="md:col-span-2"></div>
-              <ProjectActions
-                project={project}
-                isAuthenticated={isAuthenticated}
-                role={role}
-                canBid={canBid}
-                userHasBid={userHasBid || false}
-                userBid={userBid}
-                onSubmitBid={() => setShowBidForm(!showBidForm)}
-                onEditBid={handleEditBid}
-                onDeleteBid={handleDeleteBid}
-              />
-            </div>
+
+            <ProjectActions
+              project={project}
+              isAuthenticated={isAuthenticated}
+              role={role}
+              canBid={canBid}
+              canEditBid={canEditBid}
+              userHasBid={userHasBid || false}
+              userBid={userBid}
+              onSubmitBid={() => setShowBidForm(!showBidForm)}
+              onEditBid={handleEditBid}
+              onDeleteBid={handleDeleteBid}
+            />
 
             {/* Edit Project Modal */}
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
