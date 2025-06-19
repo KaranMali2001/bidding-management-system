@@ -14,14 +14,20 @@ export default async function Page({
   const token = await getTokenServer();
   // Cast to JwtPayload after decoding
   const decodedToken = jwt.decode(token) as JwtPayload | null;
+  let userId: string | null = null;
+  let role: string = "UNAUTHENTICATED";
+  if (decodedToken) {
+    userId = decodedToken.userId;
+    role = decodedToken.role;
+  } // TODO: Handle this case
 
-  if (!decodedToken) return <div>No decoded token found</div>;
-
-  const userId = decodedToken.userId;
-  const role = decodedToken.role;
   console.log("userId", userId);
   console.log("role", role);
   return (
-    <ProjectDetailPage project={projectDetails} userId={userId} role={role} />
+    <ProjectDetailPage
+      projectDetails={projectDetails}
+      userId={userId}
+      role={role}
+    />
   );
 }

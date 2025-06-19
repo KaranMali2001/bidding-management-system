@@ -1,8 +1,8 @@
 import { prisma } from '@/config/prisma';
 import { JwtPayload } from '@/middleware/auth';
+import { reviewSchema } from '@/types/review';
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { reviewSchema } from '@/types/review';
 
 type ReviewBody = z.infer<typeof reviewSchema>;
 
@@ -18,7 +18,7 @@ export const submitReview = async (req: Request, res: Response) => {
     if (
       !project ||
       project.buyerId !== buyer.userId ||
-      project.status !== 'Completed'
+      project.status !== 'COMPLETED'
     )
       return res.status(400).json({ message: 'Invalid project' });
 

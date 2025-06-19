@@ -1,5 +1,11 @@
 import { apiClient } from "@/config/axios";
-import type { Bid, CreateBidPayload, DeliverablePayload } from "@/lib/types";
+import type {
+  Bid,
+  CreateBidPayload,
+  DeliverablePayload,
+  SellerProject,
+} from "@/lib/types";
+import { BidForm } from "../schemas";
 
 export const bidsApi = {
   createBid: async (data: CreateBidPayload): Promise<Bid> => {
@@ -17,11 +23,18 @@ export const bidsApi = {
     return res.data;
   },
 
-  getSellerBids: async (): Promise<Bid[]> => {
-    const res = await apiClient.get<Bid[]>("/bids/mine");
+  getSellerBids: async (): Promise<SellerProject[]> => {
+    const res = await apiClient.get<SellerProject[]>("/bids/mine");
     return res.data;
   },
-
+  updateBid: async (id: string, data: BidForm): Promise<Bid> => {
+    const res = await apiClient.put<Bid>(`/bids/${id}`, data);
+    return res.data;
+  },
+  deleteBids: async (id: string): Promise<Bid> => {
+    const res = await apiClient.delete<Bid>(`/bids/${id}`);
+    return res.data;
+  },
   uploadDeliverable: async (
     projectId: string,
     data: DeliverablePayload

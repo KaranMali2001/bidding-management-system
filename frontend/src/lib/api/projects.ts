@@ -1,5 +1,9 @@
 import { apiClient } from "@/config/axios";
-import type { CreateProjectPayload, Project } from "@/lib/types";
+import type {
+  CreateProjectPayload,
+  Project,
+  UpdateProjectPayload,
+} from "@/lib/types";
 
 export const projectsApi = {
   // Get all open projects (public)
@@ -39,7 +43,13 @@ export const projectsApi = {
     const res = await apiClient.patch<Project>(`/projects/${id}/complete`);
     return res.data;
   },
-
+  updateProject: async (
+    id: string,
+    data: UpdateProjectPayload
+  ): Promise<Project> => {
+    const res = await apiClient.put<Project>(`/projects/${id}`, data);
+    return res.data;
+  },
   // Select seller for project
   selectSeller: async (projectId: string, bidId: string): Promise<Project> => {
     const res = await apiClient.post<Project>(

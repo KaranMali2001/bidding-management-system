@@ -18,6 +18,7 @@ export const authApi = {
   },
   getCurrentUser: async () => {
     const res = await apiClient.post("/auth/getCurrentUser");
+    console.log("res", res);
     return res.data;
   },
 };

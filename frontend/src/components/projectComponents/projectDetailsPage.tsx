@@ -1,76 +1,65 @@
 "use client";
 
-import { Navbar } from "@/components/layout/navbar";
-import { Badge } from "@/components/ui/badge";
+import EditProjectModalContent from "@/components/buyersComponent/editProject";
+import { DashboardLayout } from "@/components/layout/dashboardLayout";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-
-import { zodResolver } from "@hookform/resolvers/zod";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { bidsApi } from "@/lib/api/bids";
+import type { bidSchema } from "@/lib/schemas";
+import type { Project } from "@/lib/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Clock } from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-import { bidsApi } from "@/lib/api/bids";
-import { Project } from "@/lib/types";
-import { Calendar, DollarSign, Loader2, User } from "lucide-react";
 import { toast } from "sonner";
-
-const bidSchema = z.object({
-  amount: z.number().min(1, "Amount must be greater than 0"),
-  estimatedTime: z.string().min(1, "Estimated time is required"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
+import type { z } from "zod";
+import BidSelection from "../buyersComponent/bidSelector";
+import BidFormComponent from "./bid-form";
+import DeliverablesUpload from "./deliverables";
+import ProjectHeader from "./project-header";
+import ProjectActions from "./projectActions";
 
 type BidForm = z.infer<typeof bidSchema>;
 
 export default function ProjectDetailPage({
-  project,
+  projectDetails,
   userId,
   role,
 }: {
-  project: Project;
-  userId: string;
+  projectDetails: Project;
+  userId: string | null;
   role: string;
 }) {
   const params = useParams();
-
+  const [project, setProject] = useState(projectDetails);
   const queryClient = useQueryClient();
   const [showBidForm, setShowBidForm] = useState(false);
+  const [editingBid, setEditingBid] = useState<string | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const form = useForm<BidForm>({
-    resolver: zodResolver(bidSchema),
-    defaultValues: {
-      amount: 0,
-      estimatedTime: "",
-      message: "",
-    },
-  });
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setIsEditModalOpen(true);
+  };
+
+  const handleProjectUpdate = (updatedProject: Project) => {
+    setProject(updatedProject);
+  };
 
   const createBidMutation = useMutation({
     mutationFn: bidsApi.createBid,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Bid submitted successfully");
+      projectDetails.bids = [...(projectDetails.bids ?? []), data];
       setShowBidForm(false);
-      form.reset();
       queryClient.invalidateQueries({ queryKey: ["project", params.id] });
     },
     onError: () => {
@@ -78,238 +67,221 @@ export default function ProjectDetailPage({
     },
   });
 
+  const editBidMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: BidForm }) =>
+      bidsApi.updateBid(id, data),
+    onSuccess: () => {
+      toast.success("Bid updated successfully");
+      setEditingBid(null);
+      setShowBidForm(false);
+      queryClient.invalidateQueries({ queryKey: ["project", params.id] });
+    },
+    onError: () => {
+      toast.error("Failed to update bid");
+    },
+  });
+
+  const deleteBidMutation = useMutation({
+    mutationFn: bidsApi.deleteBids,
+    onSuccess: (res) => {
+      toast.success("Bid deleted successfully");
+      projectDetails.bids = projectDetails?.bids?.filter(
+        (bid) => bid.id !== res.id
+      );
+      queryClient.invalidateQueries({ queryKey: ["project", params.id] });
+    },
+    onError: () => {
+      toast.error("Failed to delete bid");
+    },
+  });
+
   const onSubmitBid = (data: BidForm) => {
-    createBidMutation.mutate({
-      projectId: params.id as string,
-      ...data,
-    });
+    if (editingBid) {
+      editBidMutation.mutate({ id: editingBid, data });
+    } else {
+      createBidMutation.mutate({
+        projectId: params.id as string,
+        ...data,
+      });
+    }
+  };
+
+  const handleEditBid = (bid: any) => {
+    setEditingBid(bid.id);
+    setShowBidForm(true);
+  };
+
+  const handleDeleteBid = (bidId: string) => {
+    if (confirm("Are you sure you want to delete this bid?")) {
+      deleteBidMutation.mutate(bidId);
+    }
+  };
+
+  const handleCancelBidForm = () => {
+    setShowBidForm(false);
+    setEditingBid(null);
   };
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-2">Project not found</h1>
-            <p className="text-muted-foreground">
-              The project you're looking for doesn't exist.
-            </p>
+      <DashboardLayout>
+        <div className="min-h-screen bg-[#0D1117]">
+          <div className="p-6">
+            <div className="text-center py-12">
+              <div className="bg-[#161B22] rounded-lg border border-[#30363D] p-8 max-w-md mx-auto">
+                <div className="w-12 h-12 bg-[#1F2A36] rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-6 h-6 text-[#8B949E]" />
+                </div>
+                <h1 className="text-xl font-semibold text-[#C9D1D9] mb-2">
+                  Project Not Found
+                </h1>
+                <p className="text-[#8B949E] mb-4">
+                  The project you're looking for doesn't exist.
+                </p>
+                <Link href="/projects">
+                  <Button
+                    variant="outline"
+                    className="border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36]"
+                  >
+                    Back to Projects
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Authentication and authorization checks
+  const isAuthenticated = role !== "UNAUTHENTICATED" && userId !== null;
+  const canBid =
+    isAuthenticated && role === "SELLER" && project.status === "PENDING";
+  const userHasBid =
+    isAuthenticated && project.bids?.some((bid) => bid.sellerId === userId);
+  const userBid =
+    isAuthenticated && project.bids?.find((bid) => bid.sellerId === userId);
+  const isProjectOwner =
+    isAuthenticated && role === "BUYER" && project.buyerId === userId;
+
+  // Check if current user is the winning seller and project is in progress
+  const winningBid = project.bids?.find((bid) => bid.status === "IN_PROGRESS");
+
+  const isWinningSeller =
+    isAuthenticated &&
+    role === "SELLER" &&
+    winningBid?.sellerId === userId &&
+    project.status === "IN_PROGRESS";
+
+  return (
+    <DashboardLayout>
+      <div className="min-h-screen bg-[#0D1117]">
+        <div className="p-6">
+          {/* Breadcrumb */}
+          <div className="mb-6">
+            <Link
+              href="/projects"
+              className="flex items-center text-[#8B949E] hover:text-[#C9D1D9] mb-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Projects
+            </Link>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Project Header */}
+            <ProjectHeader
+              project={project}
+              isProjectOwner={isProjectOwner}
+              onEditProject={handleEditProject}
+            />
+
+            {/* Project Actions */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2"></div>
+              <ProjectActions
+                project={project}
+                isAuthenticated={isAuthenticated}
+                role={role}
+                canBid={canBid}
+                userHasBid={userHasBid || false}
+                userBid={userBid}
+                onSubmitBid={() => setShowBidForm(!showBidForm)}
+                onEditBid={handleEditBid}
+                onDeleteBid={handleDeleteBid}
+              />
+            </div>
+
+            {/* Edit Project Modal */}
+            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+              <DialogContent className="max-w-3xl md:max-w-4xl lg:max-w-5xl w-full overflow-y-auto bg-[#161B22] border-[#30363D]">
+                <DialogHeader>
+                  <DialogTitle>Edit Project</DialogTitle>
+                  <DialogDescription>
+                    Update your project details
+                  </DialogDescription>
+                </DialogHeader>
+                {editingProject && (
+                  <EditProjectModalContent
+                    project={editingProject}
+                    setProjects={setProject}
+                    onSuccess={() => {
+                      setIsEditModalOpen(false);
+                      setEditingProject(null);
+                    }}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* Bid Form */}
+            {showBidForm && canBid && (
+              <BidFormComponent
+                editingBid={editingBid}
+                isLoading={
+                  createBidMutation.isPending || editBidMutation.isPending
+                }
+                onSubmit={onSubmitBid}
+                onCancel={handleCancelBidForm}
+                defaultValues={
+                  editingBid && userBid
+                    ? {
+                        amount: userBid.amount,
+                        estimatedTime: userBid.estimatedTime,
+                        message: userBid.message,
+                      }
+                    : undefined
+                }
+              />
+            )}
+
+            {/* Deliverables Upload - Show for winning seller when project is in progress */}
+            {isWinningSeller && (
+              <DeliverablesUpload
+                projectId={project.id}
+                onUploadSuccess={() => {
+                  toast.success("Deliverables uploaded successfully!");
+                  queryClient.invalidateQueries({
+                    queryKey: ["project", params.id],
+                  });
+                }}
+              />
+            )}
+
+            {/* Bid Selection */}
+            {role === "BUYER" && (
+              <BidSelection
+                bids={project.bids || []}
+                project={project}
+                userId={userId}
+                role={role}
+                onProjectUpdate={handleProjectUpdate}
+              />
+            )}
           </div>
         </div>
       </div>
-    );
-  }
-  console.log("project", project);
-  const canBid = role === "SELLER" && project.status === "Pending";
-  const userHasBid = project.bids?.some((bid) => bid.sellerId === userId);
-  console.log("userBids", userHasBid);
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl mb-2">
-                    {project.title}
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    {project.description}
-                  </CardDescription>
-                </div>
-                <Badge
-                  variant={
-                    project.status === "Pending" ? "default" : "secondary"
-                  }
-                >
-                  {project.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-semibold">
-                      Budget: ${project.budgetMin} - ${project.budgetMax}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <span>
-                      Deadline:{" "}
-                      {new Date(project.deadline).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {canBid && !userHasBid && (
-                    <Button
-                      onClick={() => setShowBidForm(!showBidForm)}
-                      className="w-full"
-                    >
-                      Submit Bid
-                    </Button>
-                  )}
-
-                  {userHasBid && (
-                    <div className="text-center p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">
-                        You have already submitted a bid for this project
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {showBidForm && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Submit Your Bid</CardTitle>
-                <CardDescription>
-                  Provide your proposal for this project
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmitBid)}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={form.control}
-                      name="amount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Bid Amount ($)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Enter your bid amount"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="estimatedTime"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Estimated Time</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g., 2 weeks, 1 month"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Proposal Message</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Describe your approach, experience, and why you're the best fit for this project"
-                              rows={4}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="flex gap-2">
-                      <Button
-                        type="submit"
-                        disabled={createBidMutation.isPending}
-                      >
-                        {createBidMutation.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Submit Bid
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowBidForm(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          )}
-
-          {project.bids && project.bids.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Bids ({project.bids.length})</CardTitle>
-                <CardDescription>
-                  Proposals submitted for this project
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {project.bids.map((bid, index) => (
-                    <div key={bid.id}>
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">
-                              {bid.seller?.name}
-                            </span>
-                            <Badge variant="outline">${bid.amount}</Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {bid.estimatedTime}
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {bid.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Submitted on{" "}
-                            {new Date(bid.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-
-                      {project.bids && index < project.bids.length - 1 && (
-                        <Separator className="mt-4" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

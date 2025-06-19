@@ -13,9 +13,16 @@ enum Role {
 }
 
 enum ProjectStatus {
-  Pending
-  InProgress
-  Completed
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum BidStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
 }
 
 model User {
@@ -45,7 +52,7 @@ model Project {
   budgetMin      Float
   budgetMax      Float
   deadline       DateTime
-  status         ProjectStatus @default(Pending)
+  status         ProjectStatus @default(PENDING)
   category       String?
   skillsRequired String[]
 
@@ -88,10 +95,10 @@ model Bid {
   seller   User   @relation(fields: [sellerId], references: [id])
 
   // Back reference if bid is selected
-  Project Project? @relation("SelectedBid")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Project   Project?  @relation("SelectedBid")
+  status    BidStatus @default(PENDING)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([projectId, sellerId]) // Prevent duplicate bids from same seller on same project
   // Indexes

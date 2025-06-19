@@ -6,7 +6,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
-
+type statusEnum = "PENDING" | "IN_PROGRESS" | "REJECTED" | "COMPLETED";
 export interface Project {
   id: string;
   title: string;
@@ -14,7 +14,7 @@ export interface Project {
   budgetMin: number;
   budgetMax: number;
   deadline: string;
-  status: "Pending" | "IN_PROGRESS" | "COMPLETED";
+  status: statusEnum;
   buyerId: string;
   selectedBidId?: string;
   createdAt: string;
@@ -22,7 +22,17 @@ export interface Project {
   bids?: Bid[];
   buyer?: User;
 }
-
+export interface SellerProject {
+  id: string;
+  amount: number;
+  estimatedTime: string;
+  message: string;
+  projectId: string;
+  sellerId: string;
+  createdAt: string;
+  updatedAt: string;
+  project: Project;
+}
 export interface Bid {
   id: string;
   projectId: string;
@@ -30,7 +40,7 @@ export interface Bid {
   amount: number;
   estimatedTime: string;
   message: string;
-  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  status: statusEnum;
   createdAt: string;
   updatedAt: string;
   seller?: User;
@@ -62,7 +72,14 @@ export interface RegisterPayload {
   role: "BUYER" | "SELLER";
   name?: string;
 }
-
+export interface UpdateProjectPayload {
+  title?: string;
+  description?: string;
+  budgetMin?: number;
+  budgetMax?: number;
+  deadline?: string;
+  status?: string;
+}
 export interface CreateProjectPayload {
   title: string;
   description: string;
