@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  BUYER
+  SELLER
+}
+
+enum ProjectStatus {
+  Pending
+  InProgress
+  Completed
+}
+
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  role     Role
+  name     String?
+  avatar   String?
+
+  // Relations
+  projects Project[] @relation("BuyerProjects")
+  bids     Bid[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([role])
+  @@index([createdAt])
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  title          String
+  description    String
+  budgetMin      Float
+  budgetMax      Float
+  deadline       DateTime
+  status         ProjectStatus @default(Pending)
+  category       String?
+  skillsRequired String[]
+
+  // Buyer relation
+  buyerId String
+  buyer   User   @relation("BuyerProjects", fields: [buyerId], references: [id])
+
+  // Selected bid relation (optional)
+  selectedBidId String? @unique
+  selectedBid   Bid?    @relation("SelectedBid", fields: [selectedBidId], references: [id])
+
+  // Other relations
+  bids         Bid[]
+  deliverables Deliverable[]
+  reviews      Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([status])
+  @@index([buyerId])
+  @@index([deadline])
+  @@index([createdAt])
+  @@index([budgetMin, budgetMax])
+  @@index([category])
+}
+
+model Bid {
+  id            String @id @default(uuid())
+  amount        Float
+  estimatedTime String
+  message       String
+
+  // Relations
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id])
+
+  // Back reference if bid is selected
+  Project Project? @relation("SelectedBid")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, sellerId]) // Prevent duplicate bids from same seller on same project
+  // Indexes
+  @@index([projectId])
+  @@index([sellerId])
+  @@index([amount])
+  @@index([createdAt])
+}
+
+model Deliverable {
+  id          String  @id @default(uuid())
+  fileUrl     String
+  fileName    String?
+  description String?
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model Review {
+  id     String @id @default(uuid())
+  rating Int    @db.SmallInt
+  review String
+
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([rating])
+  @@index([createdAt])
+}
