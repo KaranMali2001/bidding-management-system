@@ -24,7 +24,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'API is running' });
+});
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
