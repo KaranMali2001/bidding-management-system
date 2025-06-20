@@ -178,7 +178,7 @@ export default function ProjectDetailPage({
     role === "SELLER" &&
     winningBid?.sellerId === userId &&
     project.status === "IN_PROGRESS";
-
+  console.log("project", project);
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-[#0D1117]">
@@ -264,6 +264,7 @@ export default function ProjectDetailPage({
             {isWinningSeller && (
               <DeliverablesUpload
                 projectId={project.id}
+                setProject={setProject}
                 onUploadSuccess={() => {
                   toast.success("Deliverables uploaded successfully!");
                   queryClient.invalidateQueries({

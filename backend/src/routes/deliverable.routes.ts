@@ -1,15 +1,14 @@
-import { Router } from 'express';
 import { uploadDeliverable } from '@/controllers/deliverable.controller';
 import { authenticate } from '@/middleware/auth';
-import { validateRequest } from '@/middleware/validateRequest';
-import { deliverableSchema } from '@/types/deliverable';
+import { upload } from '@/middleware/upload';
+import { Router } from 'express';
 
 const router = Router();
 
 router.post(
   '/:projectId',
   authenticate('SELLER'),
-  validateRequest(deliverableSchema),
+  upload.single('file'),
   uploadDeliverable,
 );
 

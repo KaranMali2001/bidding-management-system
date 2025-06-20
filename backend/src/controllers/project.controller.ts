@@ -34,6 +34,7 @@ export const getBuyerProjects = async (req: Request, res: Response) => {
       where: { buyerId: buyer.userId },
       include: {
         bids: true,
+        deliverables: true,
       },
     });
 

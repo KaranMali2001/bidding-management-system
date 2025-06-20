@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Project } from "@/lib/types";
+import { getTokenClient } from "@/utils/getTokenClient";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileUp, Loader2, Upload } from "lucide-react";
+import axios from "axios";
+import { Archive, Loader2, Upload } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,7 +33,7 @@ import { z } from "zod";
 const deliverableSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  files: z.any().optional(),
+  file: z.any().optional(),
 });
 
 type DeliverableForm = z.infer<typeof deliverableSchema>;
@@ -38,14 +41,16 @@ type DeliverableForm = z.infer<typeof deliverableSchema>;
 interface DeliverablesUploadProps {
   projectId: string;
   onUploadSuccess?: () => void;
+  setProject: React.Dispatch<React.SetStateAction<Project>>;
 }
 
 export default function DeliverablesUpload({
   projectId,
   onUploadSuccess,
+  setProject,
 }: DeliverablesUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const form = useForm<DeliverableForm>({
     resolver: zodResolver(deliverableSchema),
@@ -56,29 +61,60 @@ export default function DeliverablesUpload({
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles(e.target.files);
+    const file = e.target.files?.[0];
+
+    if (file) {
+      // Check if file is a ZIP file
+      const isZipFile =
+        file.type === "application/zip" ||
+        file.type === "application/x-zip-compressed" ||
+        file.name.toLowerCase().endsWith(".zip");
+
+      if (!isZipFile) {
+        toast.error("Please select a ZIP file only");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      setSelectedFile(file);
+    } else {
+      setSelectedFile(null);
+    }
   };
 
   const onSubmit = async (data: DeliverableForm) => {
+    if (!selectedFile) {
+      toast.error("Please select a ZIP file to upload");
+      return;
+    }
+
     setIsUploading(true);
     try {
-      // TODO: Implement actual file upload logic here
-      // This is a placeholder for the upload functionality
-      console.log("Uploading deliverables:", {
-        ...data,
-        files: selectedFiles,
-        projectId,
-      });
-
-      // Simulate upload delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      toast.success("Deliverables uploaded successfully!");
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      const token = getTokenClient();
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/deliverables/${projectId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `${token}`,
+          },
+        }
+      );
+      setProject((prev) => ({
+        ...prev,
+        status: "COMPLETED",
+      }));
       form.reset();
-      setSelectedFiles(null);
+      setSelectedFile(null);
       onUploadSuccess?.();
     } catch (error) {
-      toast.error("Failed to upload deliverables");
+      toast.error("Failed to upload deliverable");
+      console.error("Upload error:", error);
     } finally {
       setIsUploading(false);
     }
@@ -92,7 +128,7 @@ export default function DeliverablesUpload({
           Upload Deliverables
         </CardTitle>
         <CardDescription className="text-[#8B949E]">
-          Upload your completed work and project deliverables
+          Upload your completed work as a single ZIP file
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -141,29 +177,31 @@ export default function DeliverablesUpload({
 
             <div className="space-y-2">
               <label className="text-[#C9D1D9] font-medium text-sm">
-                Upload Files
+                Upload ZIP File
               </label>
               <div className="border-2 border-dashed border-[#30363D] rounded-lg p-6 text-center hover:border-[#2F81F7] transition-colors">
-                <FileUp className="h-8 w-8 text-[#8B949E] mx-auto mb-2" />
+                <Archive className="h-8 w-8 text-[#8B949E] mx-auto mb-2" />
                 <p className="text-[#8B949E] mb-2">
-                  Drag and drop files here, or click to select
+                  Select a ZIP file containing your deliverables
                 </p>
                 <Input
                   type="file"
-                  multiple
+                  accept=".zip,application/zip,application/x-zip-compressed"
                   onChange={handleFileChange}
                   className="bg-[#1F2A36] border-[#30363D] text-[#C9D1D9] file:bg-[#2F81F7] file:text-white file:border-0 file:rounded file:px-3 file:py-1"
                 />
-                {selectedFiles && selectedFiles.length > 0 && (
+                {selectedFile && (
                   <div className="mt-3 text-left">
                     <p className="text-sm text-[#C9D1D9] mb-1">
-                      Selected files:
+                      Selected file:
                     </p>
-                    {Array.from(selectedFiles).map((file, index) => (
-                      <p key={index} className="text-xs text-[#8B949E]">
-                        {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    ))}
+                    <div className="flex items-center gap-2">
+                      <Archive className="h-4 w-4 text-[#8B949E]" />
+                      <span className="text-xs text-[#8B949E]">
+                        {selectedFile.name} (
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -172,20 +210,20 @@ export default function DeliverablesUpload({
             <div className="flex gap-3 pt-4">
               <Button
                 type="submit"
-                disabled={isUploading}
+                disabled={isUploading || !selectedFile}
                 className="bg-[#28A745] hover:bg-[#28A745]/90 text-white"
               >
                 {isUploading && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Upload Deliverables
+                Upload Deliverable
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => {
                   form.reset();
-                  setSelectedFiles(null);
+                  setSelectedFile(null);
                 }}
                 className="border-[#30363D] text-[#8B949E] hover:bg-[#1F2A36]"
               >

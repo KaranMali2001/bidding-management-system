@@ -1,35 +1,67 @@
 import { prisma } from '@/config/prisma';
 import { JwtPayload } from '@/middleware/auth';
 import { Request, Response } from 'express';
-import { z } from 'zod';
-import { deliverableSchema } from '@/types/deliverable';
-
-type DeliverableBody = z.infer<typeof deliverableSchema>;
 
 export const uploadDeliverable = async (req: Request, res: Response) => {
   try {
     const seller = req.user! as JwtPayload;
     const { projectId } = req.params;
-    const data = req.body as DeliverableBody;
+    const file = req.file;
+    console.log('FILE', file);
+    if (!file?.path) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
 
-    // verify that seller is selected for project
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-    });
-    if (!project || project.selectedBidId == null)
-      return res.status(400).json({ message: 'Project not in progress' });
+    const result = await prisma.$transaction(async (tx) => {
+      // Fetch and verify the project
+      const project = await tx.project.findUnique({
+        where: { id: projectId },
+      });
 
-    const bid = await prisma.bid.findUnique({
-      where: { id: project.selectedBidId },
-    });
-    if (!bid || bid.sellerId !== seller.userId)
-      return res.status(403).json({ message: 'Not your project' });
+      if (!project || project.selectedBidId == null) {
+        throw new Error('Project not in progress');
+      }
 
-    const deliverable = await prisma.deliverable.create({
-      data: { projectId, fileUrl: data.fileUrl },
+      const bid = await tx.bid.findUnique({
+        where: { id: project.selectedBidId },
+      });
+
+      if (!bid || bid.sellerId !== seller.userId) {
+        throw new Error('Not your project');
+      }
+
+      // Mark project and bid as completed
+      await tx.project.update({
+        where: { id: projectId },
+        data: { status: 'COMPLETED' },
+      });
+
+      await tx.bid.update({
+        where: { id: project.selectedBidId },
+        data: { status: 'COMPLETED' },
+      });
+
+      // Create deliverable
+      const deliverable = await tx.deliverable.create({
+        data: {
+          projectId,
+          fileUrl: file.path,
+        },
+      });
+
+      return deliverable;
     });
-    res.status(201).json(deliverable);
-  } catch (err) {
+
+    res.status(201).json(result);
+  } catch (err: any) {
+    console.error('Error creating deliverable:', err);
+    if (
+      err.message === 'Project not in progress' ||
+      err.message === 'Not your project'
+    ) {
+      console.log('err', err);
+      return res.status(400).json({ message: err.message });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 };
