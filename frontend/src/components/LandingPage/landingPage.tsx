@@ -112,7 +112,7 @@ export default function LandingPage() {
               <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">BidConnect</span>
+              <span className="text-xl font-bold text-white">BidConnect</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a
@@ -135,7 +135,7 @@ export default function LandingPage() {
               </a>
               <Button
                 variant="outline"
-                className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white bg-transparent"
               >
                 Sign In
               </Button>
@@ -178,7 +178,10 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-gray-700 text-gray-300 hover:bg-gray-800 px-8 py-4 text-lg"
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white px-8 py-4 text-lg bg-transparent"
+                onClick={() => {
+                  window.location.href = "/projects";
+                }}
               >
                 Browse Projects
               </Button>
@@ -194,7 +197,7 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
               How It Works
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -202,7 +205,6 @@ export default function LandingPage() {
               easy steps.
             </p>
           </div>
-
           <div className="grid md:grid-cols-4 gap-8">
             {[
               {
@@ -261,21 +263,20 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits */}
-      <section id="benefits" className="py-20">
+      <section id="benefits" className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
               Why Choose BidConnect?
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               Designed for success. Built for both buyers and sellers to thrive.
             </p>
           </div>
-
           <div className="grid lg:grid-cols-2 gap-12">
             {/* For Buyers */}
             <div>
-              <h3 className="text-2xl font-bold mb-8 text-center lg:text-left">
+              <h3 className="text-2xl font-bold mb-8 text-center lg:text-left text-white">
                 For Buyers
               </h3>
               <div className="space-y-6">
@@ -299,7 +300,7 @@ export default function LandingPage() {
 
             {/* For Sellers */}
             <div>
-              <h3 className="text-2xl font-bold mb-8 text-center lg:text-left">
+              <h3 className="text-2xl font-bold mb-8 text-center lg:text-left text-white">
                 For Sellers
               </h3>
               <div className="space-y-6">
@@ -331,14 +332,13 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
               Featured Projects
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               Discover high-quality projects from buyers around the world
             </p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8">
             {projects.map((project, index) => (
               <Card
@@ -347,7 +347,7 @@ export default function LandingPage() {
               >
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
-                    <Badge className="bg-red-500 text-white">
+                    <Badge className="bg-red-500 text-white hover:bg-red-500">
                       {project.category}
                     </Badge>
                     <span className="text-sm text-gray-400">
@@ -389,12 +389,11 @@ export default function LandingPage() {
               </Card>
             ))}
           </div>
-
           <div className="text-center mt-12">
             <Button
               size="lg"
               variant="outline"
-              className="border-gray-700 text-gray-300 hover:bg-gray-800"
+              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white bg-transparent"
             >
               View All Projects
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -404,7 +403,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-20 bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Card className="bg-gradient-to-r from-red-500 to-red-600 border-0">
             <CardContent className="p-12">
@@ -426,7 +425,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-red-500 px-8 py-4 text-lg"
+                  className="border-white text-white hover:bg-white hover:text-red-500 px-8 py-4 text-lg bg-transparent"
                 >
                   Start Bidding
                 </Button>
@@ -445,7 +444,7 @@ export default function LandingPage() {
                 <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                   <Zap className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">BidConnect</span>
+                <span className="text-xl font-bold text-white">BidConnect</span>
               </div>
               <p className="text-gray-400 mb-4">
                 The ultimate platform connecting buyers with top freelancers
